@@ -1,11 +1,12 @@
 package exporter
 
 import (
-	"github.com/dennisstritzke/ipsec_exporter/ipsec"
+	"net/http"
+
+	"github.com/fedor-git/ipsec_exporter/ipsec"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/common/log"
-	"net/http"
 )
 
 var IpSecConfigFile string

@@ -2,9 +2,10 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/dennisstritzke/ipsec_exporter/exporter"
-	"github.com/spf13/cobra"
 	"os"
+
+	"github.com/fedor-git/ipsec_exporter/exporter"
+	"github.com/spf13/cobra"
 )
 
 const (
