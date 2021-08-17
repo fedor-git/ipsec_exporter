@@ -1,19 +1,21 @@
 package ipsec
 
 import (
-	"github.com/prometheus/common/log"
 	"os/exec"
 	"regexp"
 	"strconv"
+
+	"github.com/prometheus/common/log"
 )
 
 type status struct {
-	up         bool
-	status     connectionStatus
-	bytesIn    int
-	bytesOut   int
-	packetsIn  int
-	packetsOut int
+	up          bool
+	status      connectionStatus
+	bytesIn     int
+	bytesOut    int
+	packetsIn   int
+	packetsOut  int
+	onlinestate int
 }
 
 type connectionStatus int
@@ -64,12 +66,13 @@ func queryStatus(ipSecConfiguration *Configuration, provider statusProvider) map
 			}
 		} else {
 			statusMap[connection.name] = &status{
-				up:         true,
-				status:     extractStatus([]byte(out)),
-				bytesIn:    extractIntWithRegex(out, `([[0-9]+) bytes_i`),
-				bytesOut:   extractIntWithRegex(out, `([[0-9]+) bytes_o`),
-				packetsIn:  extractIntWithRegex(out, `bytes_i \(([[0-9]+) pkts`),
-				packetsOut: extractIntWithRegex(out, `bytes_o \(([[0-9]+) pkts`),
+				up:          true,
+				status:      extractStatus([]byte(out)),
+				bytesIn:     extractIntWithRegex(out, `([[0-9]+) bytes_i`),
+				bytesOut:    extractIntWithRegex(out, `([[0-9]+) bytes_o`),
+				packetsIn:   extractIntWithRegex(out, `bytes_i \(([[0-9]+) pkts`),
+				packetsOut:  extractIntWithRegex(out, `bytes_o \(([[0-9]+) pkts`),
+				onlinestate: extractIntWithRegex(out, `Security Associations \(([[0-9]+) up`),
 			}
 		}
 	}

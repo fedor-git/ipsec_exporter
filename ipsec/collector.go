@@ -5,15 +5,16 @@ import (
 )
 
 var (
-	metricUp = prometheus.NewDesc("ipsec_up", "value indicating a successful scrape", []string{"tunnel"}, nil)
-	metricStatus = prometheus.NewDesc("ipsec_status", "ipsec status value", []string{"tunnel"}, nil)
-	metricBytesIn = prometheus.NewDesc("ipsec_in_bytes", "received bytes per tunnel", []string{"tunnel"}, nil)
-	metricBytesOut = prometheus.NewDesc("ipsec_out_bytes", "sent bytes per tunnel", []string{"tunnel"}, nil)
-	metricPacketsIn = prometheus.NewDesc("ipsec_in_packets", "received packets per tunnel", []string{"tunnel"}, nil)
-	metricPacketsOut = prometheus.NewDesc("ipsec_out_packets", "sent packets per tunnel", []string{"tunnel"}, nil)
+	metricUp          = prometheus.NewDesc("ipsec_up", "value indicating a successful scrape", []string{"tunnel"}, nil)
+	metricStatus      = prometheus.NewDesc("ipsec_status", "ipsec status value", []string{"tunnel"}, nil)
+	metricBytesIn     = prometheus.NewDesc("ipsec_in_bytes", "received bytes per tunnel", []string{"tunnel"}, nil)
+	metricBytesOut    = prometheus.NewDesc("ipsec_out_bytes", "sent bytes per tunnel", []string{"tunnel"}, nil)
+	metricPacketsIn   = prometheus.NewDesc("ipsec_in_packets", "received packets per tunnel", []string{"tunnel"}, nil)
+	metricPacketsOut  = prometheus.NewDesc("ipsec_out_packets", "sent packets per tunnel", []string{"tunnel"}, nil)
+	metriconlinestate = prometheus.NewDesc("ipsec_server_connected_clients", "connected clients all tunnel", []string{"tunnel"}, nil)
 )
 
-func NewCollector(configurations ... *Configuration) *Collector {
+func NewCollector(configurations ...*Configuration) *Collector {
 	return &Collector{
 		configurations: configurations,
 	}
@@ -30,6 +31,7 @@ func (c *Collector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- metricBytesOut
 	ch <- metricPacketsIn
 	ch <- metricPacketsOut
+	ch <- metriconlinestate
 }
 
 func (c *Collector) Collect(ch chan<- prometheus.Metric) {
@@ -43,6 +45,7 @@ func (c *Collector) Collect(ch chan<- prometheus.Metric) {
 			ch <- prometheus.MustNewConstMetric(metricBytesOut, prometheus.CounterValue, float64(tunnelStatus.bytesOut), tunnel)
 			ch <- prometheus.MustNewConstMetric(metricPacketsIn, prometheus.CounterValue, float64(tunnelStatus.packetsIn), tunnel)
 			ch <- prometheus.MustNewConstMetric(metricPacketsOut, prometheus.CounterValue, float64(tunnelStatus.packetsOut), tunnel)
+			ch <- prometheus.MustNewConstMetric(metriconlinestate, prometheus.CounterValue, float64(tunnelStatus.onlinestate), tunnel)
 		}
 	}
 }
