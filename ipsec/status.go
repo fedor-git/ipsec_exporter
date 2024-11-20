@@ -46,6 +46,12 @@ func (c *cliStatusProvider) statusOutput(tunnel connection) (string, error) {
 	return string(out), nil
 }
 
+func countConnections(output string) int {
+    re := regexp.MustCompile(`ESTABLISHED`)
+    matches := re.FindAllString(output, -1)
+    return len(matches)
+}
+
 func queryStatus(ipSecConfiguration *Configuration, provider statusProvider) map[string]*status {
 	statusMap := map[string]*status{}
 
@@ -72,13 +78,14 @@ func queryStatus(ipSecConfiguration *Configuration, provider statusProvider) map
 				bytesOut:    extractIntWithRegex(out, `([[0-9]+) bytes_o`),
 				packetsIn:   extractIntWithRegex(out, `bytes_i \(([[0-9]+) pkts`),
 				packetsOut:  extractIntWithRegex(out, `bytes_o \(([[0-9]+) pkts`),
-				onlinestate: extractIntWithRegex(out, `Security Associations \(([[0-9]+) up`),
+				onlinestate: countConnections(out),
 			}
 		}
 	}
 
 	return statusMap
 }
+
 
 func extractStatus(statusLine []byte) connectionStatus {
 	noMatchRegex := regexp.MustCompile(`no match`)
